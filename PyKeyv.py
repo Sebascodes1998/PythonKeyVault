@@ -1,20 +1,15 @@
 import requests
+import configparser
 
-# Replace with your actual Azure AD tenant ID, client ID, and client secret
-tenant_id = ""
-client_id = ""
-client_secret = ""
+# Load the parameters from the config file
+config = configparser.ConfigParser()
+config.read('Update Secret Password\\config.param')
 
-# Replace with your actual key vault URL
-vault_url = ""
+vault_url = config.get('KEYVAULT', 'vault_url')
+tenant_id = config.get('KEYVAULT', 'tenant_id')
+client_id = config.get('KEYVAULT', 'client_id')
+client_secret = config.get('KEYVAULT', 'client_secret')
 
-# Replace with your actual third party software URL
-third_party_url = 'https://example.com'
-
-
-#----------------------------
-#---------------------------- DO NOT EDIT BELOW THIS LINE
-#----------------------------
 
 # Set up the request URL and data to get an access token
 url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
@@ -54,10 +49,7 @@ if response.status_code == 200:
 else:
     print(f"Request failed with status code {response.status_code}: {response.text}")
 
-
-
 for secret in secrets:
-
     secret_url = secret["id"]
 
     # Use HTTPS for requests
@@ -75,18 +67,18 @@ for secret in secrets:
         # Error occurred
         print(f"Error: {azure_secret_response.status_code} - {azure_secret_response.text}")
 
-    secret_name = secret_value.split('/')[-1]
-    # Use the json parameter for POST requests
-    update_secret_url = f"{third_party_url}/ServerManage/UpdateSecret"
-    payload = {"SecretName": secret_name}
-    headers = {"accept": "*/*", "content-type": "application/json"}
-    response = requests.post(update_secret_url, json=payload, headers=headers, verify=True)
+    print(secret_value)
 
-    # Check the response status code
-    if response.status_code == 200:
-        # Successful request
-        print(response.json())
-    else:
-        # Error occurred
-        print(f"Error: {response.status_code} - {response.text}")
+    # # Use the json parameter for POST requests
+    # update_secret_url = f"{third_party_url}/ServerManage/UpdateSecret"
+    # payload = {"SecretName": secret_name}
+    # headers = {"accept": "*/*", "content-type": "application/json"}
+    # response = requests.post(update_secret_url, json=payload, headers=headers, verify=True)
 
+    # # Check the response status code
+    # if response.status_code == 200:
+    #     # Successful request
+    #     print(response.json())
+    # else:
+    #     # Error occurred
+    #     print(f"Error: {response.status_code} - {response.text}")
