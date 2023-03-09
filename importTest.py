@@ -3,7 +3,7 @@ import configparser
 
 # Load the parameters from the config file
 config = configparser.ConfigParser()
-config.read('Update Secret Password\\config.param')
+config.read('config.param')
 
 vault_url = config.get('KEYVAULT', 'vault_url')
 tenant_id = config.get('KEYVAULT', 'tenant_id')
