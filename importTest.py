@@ -1,11 +1,15 @@
 import requests
+import configparser
 
-third_party_url = ''
+# Load the parameters from the config file
+config = configparser.ConfigParser()
+config.read('Update Secret Password\\config.param')
 
-# Replace with your actual Azure AD tenant ID, client ID, and client secret
-tenant_id = "6962c7e8-a9a5-4fc7-9af6-5a52fa48da1c"
-client_id = "27f490fb-81b1-4db7-b1d2-820b072fa3e8"
-client_secret = "wSF8Q~YoCIO73MD0wqqVv3FCMEa-1UOLpjtGOcH0"
+vault_url = config.get('KEYVAULT', 'vault_url')
+tenant_id = config.get('KEYVAULT', 'tenant_id')
+client_id = config.get('KEYVAULT', 'client_id')
+client_secret = config.get('KEYVAULT', 'client_secret')
+
 
 # Set up the request URL and data to get an access token
 url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
@@ -26,11 +30,6 @@ if response.status_code == 200:
 else:
     print(f"Request failed with status code {response.status_code}: {response.text}")
 
-
-
-# Replace with your actual key vault URL
-vault_url = "https://sebascodes1998-vault.vault.azure.net"
-
 # Set up the request headers with the access token
 headers = {
     "Authorization": f"Bearer {access_token}"
@@ -50,10 +49,7 @@ if response.status_code == 200:
 else:
     print(f"Request failed with status code {response.status_code}: {response.text}")
 
-
-
 for secret in secrets:
-
     secret_url = secret["id"]
 
     # Use HTTPS for requests
@@ -73,7 +69,6 @@ for secret in secrets:
 
     print(secret_value)
 
-
     # # Use the json parameter for POST requests
     # update_secret_url = f"{third_party_url}/ServerManage/UpdateSecret"
     # payload = {"SecretName": secret_name}
@@ -87,4 +82,3 @@ for secret in secrets:
     # else:
     #     # Error occurred
     #     print(f"Error: {response.status_code} - {response.text}")
-
