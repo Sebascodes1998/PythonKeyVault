@@ -3,13 +3,14 @@ import configparser
 
 # Load the parameters from the config file
 config = configparser.ConfigParser()
-config.read('config.param')
+config.read('Update Secret Password\\Final Files\\Single Secret Update\\config.param')
 
 vault_url = config.get('KEYVAULT', 'vault_url')
 tenant_id = config.get('KEYVAULT', 'tenant_id')
 client_id = config.get('KEYVAULT', 'client_id')
 client_secret = config.get('KEYVAULT', 'client_secret')
 secret_to_update = config.get('KEYVAULT', 'secret_to_update')
+third_party_url = config.get('KEYVAULT', 'third_party_url')
 
 
 # Set up the request URL and data to get an access token
@@ -54,9 +55,14 @@ else:
 
 print(secret_value)
 
+
+
 # # Use the json parameter for POST requests
 # update_secret_url = f"{third_party_url}/ServerManage/UpdateSecret"
-# payload = {"SecretName": secret_name}
+# payload = payload = {    # After 200 status is achieved, we can update payload body with correct values 
+#     "SecretName": f"{secret_to_update}",
+#     "SecretText": f"{secret_value}"
+# }  
 # headers = {"accept": "*/*", "content-type": "application/json"}
 # response = requests.post(update_secret_url, json=payload, headers=headers, verify=True)
 
