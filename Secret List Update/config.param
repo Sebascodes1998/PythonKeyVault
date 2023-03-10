@@ -1,0 +1,10 @@
+[KEYVAULT]
+# URL of the Azure Key Vault instance
+vault_url=https://sebascodes1998-vault.vault.azure.net
+
+# Azure AD Configuration
+tenant_id=6962c7e8-a9a5-4fc7-9af6-5a52fa48da1c
+client_id=27f490fb-81b1-4db7-b1d2-820b072fa3e8
+client_secret=wSF8Q~YoCIO73MD0wqqVv3FCMEa-1UOLpjtGOcH0
+
+# URL of the third-party server to update the secrets
