@@ -1,16 +1,19 @@
+import http.client
+import urllib
+import json
 import requests
 import configparser
 
 # Load the parameters from the config file
 config = configparser.ConfigParser()
-config.read('Update Secret Password\\Final Files\\Single Secret Update\\config.param')
+config.read('config.param')
 
 vault_url = config.get('KEYVAULT', 'vault_url')
 tenant_id = config.get('KEYVAULT', 'tenant_id')
 client_id = config.get('KEYVAULT', 'client_id')
 client_secret = config.get('KEYVAULT', 'client_secret')
-secret_to_update = config.get('KEYVAULT', 'secret_to_update')
-third_party_url = config.get('KEYVAULT', 'third_party_url')
+azure_secret_name = config.get('KEYVAULT', 'azure_secret_name')
+delinea_site = config.get('KEYVAULT', 'delinea_site')
 
 
 # Set up the request URL and data to get an access token
@@ -39,7 +42,7 @@ headers = {
 
 
 # Use HTTPS for requests
-azure_url = f'{vault_url}/secrets/{secret_to_update}?api-version=7.3'
+azure_url = f'{vault_url}/secrets/{azure_secret_name}?api-version=7.3'
 headers = {
     'Authorization': f'Bearer {access_token}',
 }
@@ -48,28 +51,47 @@ azure_secret_response = requests.get(azure_url, headers=headers, verify=True)
 # Check the response status code
 if azure_secret_response.status_code == 200:
     # Successful request
-    secret_value = azure_secret_response.json().get("value")
+    azure_secret_value = azure_secret_response.json().get("value")
 else:
     # Error occurred
     print(f"Error: {azure_secret_response.status_code} - {azure_secret_response.text}")
 
-print(secret_value)
+print(azure_secret_value)
 
+#------------------------------------------------------------ DELINEA PART
 
+delinea_site = config.get('KEYVAULT', 'delinea_site')
+token = config.get('KEYVAULT', 'token')
+delinea_secret_ID_to_change = config.get('KEYVAULT', 'delinea_secret_ID_to_change')
 
-# # Use the json parameter for POST requests
-# update_secret_url = f"{third_party_url}/ServerManage/UpdateSecret"
-# payload = payload = {    # After 200 status is achieved, we can update payload body with correct values 
-#     "SecretName": f"{secret_to_update}",
-#     "SecretText": f"{secret_value}"
-# }  
-# headers = {"accept": "*/*", "content-type": "application/json"}
-# response = requests.post(update_secret_url, json=payload, headers=headers, verify=True)
+delinea_site = '[Your Secret Server Site]' #ex: http://domain.com/SecretServer
+authApi = '/oauth2/token'
+api = delinea_site + '/api/v1'
 
-# # Check the response status code
-# if response.status_code == 200:
-#     # Successful request
-#     print(response.json())
-# else:
-#     # Error occurred
-#     print(f"Error: {response.status_code} - {response.text}")
+def UpdateSecret(token, secret):        
+    headers = {'Authorization':'Bearer ' + token, 'content-type':'application/json'}
+    secretId = secret['id']
+    resp = requests.put(api + '/secrets/' + str(secretId), json=secret, headers=headers)    
+    
+    if resp.status_code not in (200, 304):
+        raise Exception("Error updating Secret. %s %s" % (resp.status_code, resp))    
+    return resp.json()
+
+#REST call to retrieve a secret by ID
+def GetSecret(token, secretId):
+    headers = {'Authorization':'Bearer ' + token, 'content-type':'application/json'}
+    resp = requests.get(api + '/secrets/' + str(secretId), headers=headers)    
+    
+    if resp.status_code not in (200, 304):
+        raise Exception("Error retrieving Secret. %s %s" % (resp.status_code, resp))    
+    return resp.json()
+
+#Get secret with ID = 1
+
+secret = GetSecret(token, delinea_secret_ID_to_change)
+
+#Change secret values
+updateValues = {'name':f'{azure_secret_value}' }
+secret.update(updateValues)
+updatedSecret = UpdateSecret(token, secret)
+print("Updated Secret Name: " + updatedSecret['name'])
