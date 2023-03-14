@@ -8,7 +8,9 @@ client_id=27f490fb-81b1-4db7-b1d2-820b072fa3e8
 client_secret=wSF8Q~YoCIO73MD0wqqVv3FCMEa-1UOLpjtGOcH0
 
 # Secret you would like to update
-secret_to_update=TestSecret3
+azure_secret_name=Test56
 
-# URL of the third-party server to update the secrets
-third_party_url=https://example.com
+#DELINEA SITE INFORMATION
+delinea_site=http://domain.com/SecretServer
+token=ReplaceWithYourToken
+delinea_secret_ID_to_change=Secret_ID
