@@ -1,0 +1,7 @@
+[KEYVAULT]
+# URL of the Azure Key Vault instance
+delinea_site=[Your Secret Server Site]
+
+token=Authtoken
+
+secret_to_change=valueofSecret
